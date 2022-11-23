@@ -12,7 +12,7 @@ function component() {
 
   element.innerHTML ='blbabbbb';
   element.classList.add('hello');
-  
+
   const myIcon = new Image(50, 50);
   myIcon.src = snowmanImg;
 
@@ -56,9 +56,6 @@ document.body.appendChild( renderer.domElement );
 
 // animation
 function animate() {
-
-	requestAnimationFrame( animate );
-
 	// required if controls.enableDamping or controls.autoRotate are set to true
 	controls.update();
 
