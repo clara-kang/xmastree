@@ -1,6 +1,6 @@
 import './css/style.css';
+import { Tree } from './tree';
 import * as THREE from 'three';
-import { Mesh } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -26,8 +26,8 @@ function component() {
 document.body.appendChild(component());
 
 
-const camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
-camera.position.z = 1;
+const camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 5000);
+camera.position.z = 5;
 
 const scene = new THREE.Scene();
 const loader = new GLTFLoader();
@@ -37,18 +37,18 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.toneMappingExposure = 2;
 const controls = new OrbitControls( camera, renderer.domElement );
 
-loader.load(gltfPath, function ( gltf ) {
-  for (const obj of gltf.scene.children) {
-    if (obj.type === 'Mesh') {
-      const mesh = obj as Mesh;
-      mesh.applyMatrix4(new THREE.Matrix4().scale(new THREE.Vector3(0.1, 0.1, 0.1)));
-      mesh.material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-      scene.add(mesh);
-    }
-  }
-}, undefined, function ( error ) {
-	console.error( error );
-} );
+// loader.load(gltfPath, function ( gltf ) {
+//   for (const obj of gltf.scene.children) {
+//     if (obj.type === 'Mesh') {
+//       const mesh = obj as Mesh;
+//       mesh.applyMatrix4(new THREE.Matrix4().scale(new THREE.Vector3(0.1, 0.1, 0.1)));
+//       mesh.material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+//       scene.add(mesh);
+//     }
+//   }
+// }, undefined, function ( error ) {
+// 	console.error( error );
+// } );
 
 hdrLoader.load(background, (texture) => {
   texture.mapping = THREE.EquirectangularReflectionMapping;
@@ -57,11 +57,6 @@ hdrLoader.load(background, (texture) => {
 
   render();
 })
-
-const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-const cube = new THREE.Mesh( geometry, material );
-scene.add( cube );
 
 renderer.setAnimationLoop( animate );
 document.body.appendChild( renderer.domElement );
@@ -72,8 +67,12 @@ window.addEventListener("resize", function () {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
+const tree = new Tree(renderer, camera);
+
 function render() {
-  renderer.render( scene, camera );
+  renderer.render(scene, camera);
+  renderer.autoClear = false;
+  tree.render();
 }
 
 // animation
