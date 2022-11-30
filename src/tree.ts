@@ -33,7 +33,6 @@ export class Tree {
   private leafInstancedMesh;
   private currentBranchIndex = 0;
   private currentLeafIndex = 0;
-  private currentSecondLevelRoundNum = 0;
 
   constructor (
     private renderer: THREE.WebGLRenderer,
