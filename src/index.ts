@@ -50,13 +50,13 @@ const controls = new OrbitControls( camera, renderer.domElement );
 // 	console.error( error );
 // } );
 
-hdrLoader.load(background, (texture) => {
-  texture.mapping = THREE.EquirectangularReflectionMapping;
-  scene.background = texture;
-  scene.environment = texture;
+// hdrLoader.load(background, (texture) => {
+//   texture.mapping = THREE.EquirectangularReflectionMapping;
+//   scene.background = texture;
+//   scene.environment = texture;
 
-  render();
-})
+//   render();
+// })
 
 renderer.setAnimationLoop( animate );
 document.body.appendChild( renderer.domElement );
@@ -67,12 +67,27 @@ window.addEventListener("resize", function () {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-const tree = new Tree(renderer, camera);
+const sphereVertexShader = require('./shaders/sphere_v.glsl');
+const sphereFragmentShader = require('./shaders/sphere_f.glsl');
+
+const geometry = new THREE.SphereGeometry( 1, 32, 16 );
+const material = new THREE.RawShaderMaterial( {
+  uniforms: {
+    time: {value: 0}
+  },
+  vertexShader: sphereVertexShader,
+  fragmentShader: sphereFragmentShader,
+  glslVersion: THREE.GLSL3
+} );
+
+const sphere = new THREE.Mesh( geometry, material );
+scene.add( sphere );
 
 function render() {
   renderer.render(scene, camera);
-  renderer.autoClear = false;
-  tree.render();
+  material.uniforms.time.value = (material.uniforms.time.value + 0.1) % 5;
+  // renderer.autoClear = false;
+  // tree.render();
 }
 
 // animation
