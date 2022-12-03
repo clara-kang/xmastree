@@ -73,18 +73,21 @@ export class Tree {
   private createMeshLevel0() {
     const branchMatrix = new THREE.Matrix4();
     this.branchInstancedMesh.setMatrixAt(this.currentBranchIndex++, branchMatrix);
-
-    for (let index = 0; index < this.secondLevelBranchNum; ++index) {
-      this.createMeshLevel1(index, branchMatrix);
+    let branchId = 0;
+    for (let roundNum = 0; roundNum < this.secondLevelRounds; roundNum++) {
+      const roundBranchNum = this.secondLevelAvgBranchPerRound + (Math.floor(this.secondLevelRounds / 2) - roundNum);
+      for (let i = 0; i < roundBranchNum; i++) {
+        this.createMeshLevel1(roundNum, roundBranchNum, i);
+        branchId += 1;
+      }
     }
   }
 
   
-  private createMeshLevel1(branchId: number, parentMatrix: THREE.Matrix4) {
-    const roundNum = Math.floor(branchId / this.secondLevelAvgBranchPerRound);
+  private createMeshLevel1(roundNum: number, roundBranchNum: number, branchIdInRound: number) {
     const scaleFactor = this.jitter((0.5 - 0.5 * roundNum / this.secondLevelRounds));
     const branchHeight = this.jitter(roundNum * (this.trunkHeight - this.trunkNotGrowingHeight) / this.secondLevelRounds + this.trunkNotGrowingHeight, 0.2);
-    const matrix = new THREE.Matrix4().makeRotationY(this.jitter(Math.PI * 2 / this.secondLevelAvgBranchPerRound * branchId));
+    const matrix = new THREE.Matrix4().makeRotationY(this.jitter(Math.PI * 2 / roundBranchNum * branchIdInRound));
     // matrix.multiply(new THREE.Matrix4().makeRotationZ(Math.PI * 0.4 * (1.0 - roundNum / this.secondLevelBranchPerRound)));
     matrix.multiply(new THREE.Matrix4().makeRotationZ(Math.PI * 0.4));
     matrix.setPosition(0, branchHeight, 0);
