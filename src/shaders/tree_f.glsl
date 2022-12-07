@@ -6,8 +6,11 @@ uniform vec3 cameraPosition;
 
 in mat4 vInstanceMatrix;
 in vec3 vPosition;
-out vec4 fragmentColor;
+layout(location = 0) out vec4 fragmentPosition;
+layout(location = 1) out vec4 fragmentColor;
 
+const vec3 leafColor = vec3(58.0, 95.0, 11.0) / 255.0;
+// const vec3 leafColor = vec3(1.0);
 const float repetitionUnit = 0.05;
 const float needleWidth = 0.02;
 const float leafWidth = 0.2;
@@ -40,9 +43,13 @@ void main() {
     vec3 posWorld = vec3(vInstanceMatrix * vec4(vPosition, 1.0));
     float maxDistToTrunkAtY = max(2.5 * (5.0 - posWorld.y) / 5.0, 0.0);
     float shadowFrac = min((maxDistToTrunkAtY - length(posWorld.xz)) / maxDistToTrunkAtY, 1.0);
-    float diffuse = max( normal.y, 0.0);
+    float diffuse = max( normal.y, 0.0) * 0.5;
     diffuse = min(diffuse + ambient, 1.0);
-    fragmentColor = vec4(vec3(diffuse * (1.0 - shadowFrac)), 1.0);
+    fragmentColor = vec4(diffuse * (1.0 - shadowFrac) * leafColor, 1.0);
+    fragmentPosition = vec4(posWorld, 1.0);
+
+    fragmentPosition.w = atan(normal.y, normal.x);
+    fragmentColor.w = acos(normal.z);
   } else {
     discard;
   }
