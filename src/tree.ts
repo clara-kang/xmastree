@@ -52,7 +52,7 @@ export class Tree {
       fragmentShader: gBufferFragmentShader,
       glslVersion: THREE.GLSL3,
       uniforms: {
-        color: {value: new THREE.Vector3(1.0, 1.0, 1.0)}
+        color: {value: new THREE.Vector3(139,69,19).multiplyScalar(0.5/255)}
       }
     });
 
