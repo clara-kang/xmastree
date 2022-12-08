@@ -23,7 +23,7 @@ camera.position.set( 30, 10, 100 );
 
 const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer( { antialias: true } );
-renderer.setPixelRatio( window.devicePixelRatio );
+// renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.toneMappingExposure = 2;
 const controls = new OrbitControls( camera, renderer.domElement );
