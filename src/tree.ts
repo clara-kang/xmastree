@@ -73,6 +73,7 @@ export class Tree {
   private createMeshLevel0() {
     const branchMatrix = new THREE.Matrix4();
     this.branchInstancedMesh.setMatrixAt(this.currentBranchIndex++, branchMatrix);
+    //this.branchInstancedMesh.position.set(0, -5, 60);
 
     for (let index = 0; index < this.secondLevelBranchNum; ++index) {
       this.createMeshLevel1(index, branchMatrix);

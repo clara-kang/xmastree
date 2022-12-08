@@ -1,24 +1,14 @@
+// @ts-nocheck
 import './css/style.css';
 import { Tree } from './tree';
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { Sky } from './sky';
 
-const gltfPath = require('./models/lowpolytree.glb');
-const snowmanImg = require('./images/the-snow-folk.png');
-const background = require('./images/winter_lake_01_2k.hdr');
 
 function component() {
   const element = document.createElement('div');
-
-  element.innerHTML ='blbabbbb';
   element.classList.add('hello');
-
-  const myIcon = new Image(50, 50);
-  myIcon.src = snowmanImg;
-
-  element.appendChild(myIcon);
 
   return element;
 }
@@ -26,16 +16,61 @@ function component() {
 document.body.appendChild(component());
 
 
-const camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 5000);
-camera.position.z = 5;
+const camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, 1, 20000);
+camera.position.set( 30, 10, 100 );
 
 const scene = new THREE.Scene();
-const loader = new GLTFLoader();
-const hdrLoader = new RGBELoader();
 const renderer = new THREE.WebGLRenderer( { antialias: true } );
+renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.toneMappingExposure = 2;
 const controls = new OrbitControls( camera, renderer.domElement );
+
+const moon = new THREE.Vector3();
+const sky = new Sky();
+sky.scale.setScalar( 10000 );
+
+const parameters = {
+  elevation: 20,
+  azimuth: -150,
+  turbidity: 1,
+  rayleigh: 0,
+  mieCoefficient: 0.005,
+  mieDirectionalG: 0
+};
+
+const skyUniforms = sky.material.uniforms;
+function updateSky() {
+  skyUniforms[ 'turbidity' ].value = parameters.turbidity;
+  skyUniforms[ 'rayleigh' ].value = parameters.rayleigh;
+  skyUniforms[ 'mieCoefficient' ].value = parameters.mieCoefficient;
+  skyUniforms[ 'mieDirectionalG' ].value = parameters.mieDirectionalG;
+}
+
+updateSky();
+
+const pmremGenerator = new THREE.PMREMGenerator( renderer );
+let renderTarget;
+
+function updateMoon() {
+
+  const phi = THREE.MathUtils.degToRad( 90 - parameters.elevation );
+  const theta = THREE.MathUtils.degToRad( parameters.azimuth );
+
+  moon.setFromSphericalCoords( 1000, phi, theta );
+
+  sky.material.uniforms[ 'sunPosition' ].value.copy( moon );
+
+  if ( renderTarget !== undefined ) renderTarget.dispose();
+
+  renderTarget = pmremGenerator.fromScene( sky );
+
+  scene.environment = renderTarget.texture;
+
+}
+
+updateMoon();
+scene.add( sky );
 
 // loader.load(gltfPath, function ( gltf ) {
 //   for (const obj of gltf.scene.children) {
@@ -49,14 +84,6 @@ const controls = new OrbitControls( camera, renderer.domElement );
 // }, undefined, function ( error ) {
 // 	console.error( error );
 // } );
-
-hdrLoader.load(background, (texture) => {
-  texture.mapping = THREE.EquirectangularReflectionMapping;
-  scene.background = texture;
-  scene.environment = texture;
-
-  render();
-})
 
 renderer.setAnimationLoop( animate );
 document.body.appendChild( renderer.domElement );
