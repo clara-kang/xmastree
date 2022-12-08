@@ -1,4 +1,3 @@
-// @ts-nocheck
 import './css/style.css';
 import { Tree } from './tree';
 import * as THREE from 'three';
@@ -14,8 +13,6 @@ function component() {
 }
 
 document.body.appendChild(component());
-
-import { WebGLRenderTarget } from 'three';
 
 
 const lightBulbVertexShader = require('./shaders/light_bulb_v.glsl');
@@ -44,18 +41,10 @@ const parameters = {
   mieDirectionalG: 0
 };
 
-const skyUniforms = sky.material.uniforms;
-function updateSky() {
-  skyUniforms[ 'turbidity' ].value = parameters.turbidity;
-  skyUniforms[ 'rayleigh' ].value = parameters.rayleigh;
-  skyUniforms[ 'mieCoefficient' ].value = parameters.mieCoefficient;
-  skyUniforms[ 'mieDirectionalG' ].value = parameters.mieDirectionalG;
-}
-
-updateSky();
 
 const pmremGenerator = new THREE.PMREMGenerator( renderer );
-let renderTarget;
+// @ts-expect-error
+let renderTarget = pmremGenerator.fromScene( sky );
 
 function updateMoon() {
 
@@ -64,10 +53,8 @@ function updateMoon() {
 
   moon.setFromSphericalCoords( 1000, phi, theta );
 
-  sky.material.uniforms[ 'sunPosition' ].value.copy( moon );
-
   if ( renderTarget !== undefined ) renderTarget.dispose();
-
+  // @ts-expect-error
   renderTarget = pmremGenerator.fromScene( sky );
 
   scene.environment = renderTarget.texture;
@@ -77,18 +64,6 @@ function updateMoon() {
 updateMoon();
 scene.add( sky );
 
-// loader.load(gltfPath, function ( gltf ) {
-//   for (const obj of gltf.scene.children) {
-//     if (obj.type === 'Mesh') {
-//       const mesh = obj as Mesh;
-//       mesh.applyMatrix4(new THREE.Matrix4().scale(new THREE.Vector3(0.1, 0.1, 0.1)));
-//       mesh.material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-//       scene.add(mesh);
-//     }
-//   }
-// }, undefined, function ( error ) {
-// 	console.error( error );
-// } );
 let read = false;
 let mouseX = 0, mouseY = 0;
 let clickedPosWorld = new THREE.Vector3();
