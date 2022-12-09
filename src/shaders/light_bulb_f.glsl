@@ -31,5 +31,11 @@ void main() {
   vec3 toLight = normalize(vWorldPosition - targetPosition);
   float diffuse = max(0.0, dot(toLight, targetNormal)) * (1.0 - clamp(distToLight / lightRadius, 0.0, 1.0));
 
-  fragmentColor = vec4(diffuse * lightColor + targetColor, 1.0);
+  bool hasTargetColor = length(targetColor.xyz) > 0.0;
+
+  if (hasTargetColor) {
+    fragmentColor = vec4(diffuse * lightColor + targetColor, hasTargetColor);
+  } else {
+    discard;
+  }
 }
