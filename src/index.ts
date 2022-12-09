@@ -25,7 +25,7 @@ const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer( { antialias: true } );
 // renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight );
-renderer.toneMappingExposure = 2;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
 const controls = new OrbitControls( camera, renderer.domElement );
 
 const moon = new THREE.Vector3();
@@ -33,10 +33,10 @@ const sky = new Sky();
 sky.scale.setScalar( 10000 );
 
 const parameters = {
-  elevation: 20,
+  elevation: 7,
   azimuth: -150,
-  turbidity: 1,
-  rayleigh: 0,
+  turbidity: 0,
+  rayleigh: 0.01,
   mieCoefficient: 0.005,
   mieDirectionalG: 0
 };
@@ -52,7 +52,8 @@ function updateMoon() {
   const theta = THREE.MathUtils.degToRad( parameters.azimuth );
 
   moon.setFromSphericalCoords( 1000, phi, theta );
-
+  // @ts-expect-error
+  sky.material.uniforms[ 'sunPosition' ].value.copy( moon );
   if ( renderTarget !== undefined ) renderTarget.dispose();
   // @ts-expect-error
   renderTarget = pmremGenerator.fromScene( sky );
@@ -98,7 +99,7 @@ const tree = new Tree(renderer, camera, gBufferRenderTarget);
 const finalVertexShader = require('./shaders/final_plane_v.glsl');
 const finalFragmentShader = require('./shaders/final_plane_f.glsl');
 
-const finalPlaneGeometry = new THREE.PlaneGeometry(2, 2);
+const finalPlaneGeometry = new THREE.PlaneGeometry(1, 1);
 const material = new THREE.RawShaderMaterial( {
   vertexShader: finalVertexShader,
   fragmentShader: finalFragmentShader,
