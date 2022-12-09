@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { Sky } from './sky';
 import { DeferShadingPlane } from './defer_shading_plane';
+import { LightBulbs } from './light_bulbs';
 
 
 function component() {
@@ -15,12 +16,8 @@ function component() {
 
 document.body.appendChild(component());
 
-
-const lightBulbVertexShader = require('./shaders/light_bulb_v.glsl');
-const lightBulbFragmentShader = require('./shaders/light_bulb_f.glsl');
-
 const camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, 1, 20000);
-camera.position.set( 30, 10, 100 );
+camera.position.set( 10, 2, 10 );
 
 const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -97,7 +94,7 @@ window.addEventListener('click', (event) => {
 
 const tree = new Tree(renderer, camera, gBufferRenderTarget);
 const deferShadingPlane = new DeferShadingPlane(renderer, camera, gBufferRenderTarget.texture[1], depthTexture);
-
+const lightBulbs = new LightBulbs(renderer, camera, gBufferRenderTarget.texture[1], gBufferRenderTarget.texture[0]);
 
 function render() {
   renderer.autoClear = true;
@@ -112,20 +109,7 @@ function render() {
     clickedPosWorld.set(pixels[0], pixels[1], pixels[2]);
 
     if (clickedPosWorld.length() > 0) {
-      const lightGeometry = new THREE.SphereGeometry(0.2, 8, 8);
-      const lightMaterial =  new THREE.RawShaderMaterial( {
-        vertexShader: lightBulbVertexShader,
-        fragmentShader: lightBulbFragmentShader,
-        glslVersion: THREE.GLSL3,
-        uniforms: {
-          colorTex: {value: gBufferRenderTarget.texture[1]},
-          positionTex: {value: gBufferRenderTarget.texture[0]}
-        }
-      });
-  
-      const lightMesh = new THREE.Mesh( lightGeometry, lightMaterial );
-      lightMesh.applyMatrix4(new THREE.Matrix4().setPosition(clickedPosWorld));
-      scene.add( lightMesh );
+      lightBulbs.addLightBulb(clickedPosWorld);
     }
     read = false;
   }
@@ -133,13 +117,12 @@ function render() {
   renderer.autoClear = false;
   renderer.setRenderTarget(null);
   deferShadingPlane.render();
-  // renderer.autoClear = false;
+  lightBulbs.render();
   renderer.render(scene, camera);
 }
 
 // animation
 function animate() {
-	// required if controls.enableDamping or controls.autoRotate are set to true
 	controls.update();
   render();
 }
