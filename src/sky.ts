@@ -29,8 +29,8 @@ class Sky extends Mesh {
 	constructor() {
 		const material = new ShaderMaterial( {
 			uniforms: {
-        'turbidity': { value: 2 },
-        'rayleigh': { value: 1 },
+        'turbidity': { value: 0 },
+        'rayleigh': { value: 0.02 },
         'mieCoefficient': { value: 0.005 },
         'mieDirectionalG': { value: 0.8 },
         'sunPosition': { value: new Vector3() },
