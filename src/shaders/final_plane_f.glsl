@@ -7,8 +7,13 @@ in vec2 uv;
 out vec4 fragmentColor;
 
 void main() {
-  // fragmentColor = vec4(1.0);
-  fragmentColor = texture(colorTex, uv);
+  vec3 color = texture(colorTex, uv).xyz;
 
-  gl_FragDepth = texture(depthTex, uv).x;
+  if (length(color.xyz) == 0.0) {
+    discard;
+  } else {
+    fragmentColor = vec4(color, 1.0);
+
+    gl_FragDepth = texture(depthTex, uv).x;
+  }
 }
