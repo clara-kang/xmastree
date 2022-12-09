@@ -1,4 +1,8 @@
-		varying vec3 vWorldPosition;
+		/*
+    use code from https://github.com/mrdoob/three.js/blob/4a1a4ca8815c561827910b3914c276f54dc1da85/examples/jsm/objects/Sky.js
+    */
+    
+    varying vec3 vWorldPosition;
 		varying vec3 vSunDirection;
 		varying float vSunfade;
 		varying vec3 vBetaR;

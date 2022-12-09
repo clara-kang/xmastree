@@ -1,4 +1,8 @@
-		uniform vec3 sunPosition;
+		/*
+    use code from https://github.com/mrdoob/three.js/blob/4a1a4ca8815c561827910b3914c276f54dc1da85/examples/jsm/objects/Sky.js
+    */
+    
+    uniform vec3 sunPosition;
 		uniform float rayleigh;
 		uniform float turbidity;
 		uniform float mieCoefficient;
