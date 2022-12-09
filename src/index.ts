@@ -3,6 +3,7 @@ import { Tree } from './tree';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { Sky } from './sky';
+import { DeferShadingPlane } from './defer_shading_plane';
 
 
 function component() {
@@ -95,28 +96,12 @@ window.addEventListener('click', (event) => {
 
 
 const tree = new Tree(renderer, camera, gBufferRenderTarget);
-
-const finalVertexShader = require('./shaders/final_plane_v.glsl');
-const finalFragmentShader = require('./shaders/final_plane_f.glsl');
-
-const finalPlaneGeometry = new THREE.PlaneGeometry(1, 1);
-const material = new THREE.RawShaderMaterial( {
-  vertexShader: finalVertexShader,
-  fragmentShader: finalFragmentShader,
-  glslVersion: THREE.GLSL3,
-  uniforms: {
-    colorTex: {value: gBufferRenderTarget.texture[1]},
-    depthTex: {value: depthTexture}
-  }
-} );
-const plane = new THREE.Mesh( finalPlaneGeometry, material );
+const deferShadingPlane = new DeferShadingPlane(renderer, camera, gBufferRenderTarget.texture[1], depthTexture);
 
 
-scene.add( plane );
 function render() {
+  renderer.autoClear = true;
   renderer.setRenderTarget(gBufferRenderTarget);
-  // renderer.render(scene, camera);
-  // renderer.autoClear = false;
   tree.render();
 
 
@@ -145,7 +130,10 @@ function render() {
     read = false;
   }
 
+  renderer.autoClear = false;
   renderer.setRenderTarget(null);
+  deferShadingPlane.render();
+  // renderer.autoClear = false;
   renderer.render(scene, camera);
 }
 
