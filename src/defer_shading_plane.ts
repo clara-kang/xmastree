@@ -6,6 +6,7 @@ export class DeferShadingPlane {
   constructor(
     private renderer: THREE.WebGLRenderer,
     private camera: THREE.Camera,
+    positionTexture: THREE.Texture,
     colorTexture: THREE.Texture,
     depthTexture: THREE.DepthTexture
   ) {
@@ -17,6 +18,7 @@ export class DeferShadingPlane {
       fragmentShader: fragmentShader,
       glslVersion: THREE.GLSL3,
       uniforms: {
+        positionTex: {value: positionTexture},
         colorTex: {value: colorTexture},
         depthTex: {value: depthTexture}
       }

@@ -34,7 +34,7 @@ void main() {
   bool hasTargetColor = length(targetColor.xyz) > 0.0;
 
   if (hasTargetColor) {
-    fragmentColor = vec4(diffuse * lightColor + targetColor, hasTargetColor);
+    fragmentColor = vec4(diffuse * lightColor, 1.0);
   } else {
     discard;
   }

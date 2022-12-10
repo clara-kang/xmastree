@@ -45,7 +45,7 @@ window.addEventListener('click', (event) => {
 
 
 const tree = new Tree(renderer, camera, gBufferRenderTarget);
-const deferShadingPlane = new DeferShadingPlane(renderer, camera, gBufferRenderTarget.texture[1], depthTexture);
+const deferShadingPlane = new DeferShadingPlane(renderer, camera, gBufferRenderTarget.texture[0], gBufferRenderTarget.texture[1], depthTexture);
 const lightBulbs = new LightBulbs(renderer, camera, gBufferRenderTarget.texture[1], gBufferRenderTarget.texture[0]);
 const skyScene = new SkyScene(renderer, camera);
 const snow = new Snow(renderer, camera);

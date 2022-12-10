@@ -21,7 +21,12 @@ export class LightBulbs {
       uniforms: {
         colorTex: {value: colorTexture},
         positionTex: {value: positionTexture}
-      }
+      },
+      blending: THREE.CustomBlending,
+      blendEquation: THREE.AddEquation,
+      blendSrc: THREE.OneFactor,
+      blendDst: THREE.OneFactor,
+      depthTest: false
     });
   }
 
