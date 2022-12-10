@@ -1,3 +1,4 @@
+import { Snow } from './snow';
 import * as THREE from 'three';
 import { Tree } from './tree';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -47,6 +48,7 @@ const tree = new Tree(renderer, camera, gBufferRenderTarget);
 const deferShadingPlane = new DeferShadingPlane(renderer, camera, gBufferRenderTarget.texture[1], depthTexture);
 const lightBulbs = new LightBulbs(renderer, camera, gBufferRenderTarget.texture[1], gBufferRenderTarget.texture[0]);
 const skyScene = new SkyScene(renderer, camera);
+const snow = new Snow(renderer, camera);
 
 function render() {
   renderer.autoClear = true;
@@ -71,6 +73,7 @@ function render() {
   deferShadingPlane.render();
   lightBulbs.render();
   skyScene.render();
+  snow.render();
 }
 
 // animation
