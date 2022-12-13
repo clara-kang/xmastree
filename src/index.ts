@@ -6,7 +6,7 @@ import { DeferShadingPlane } from './defer_shading_plane';
 import { LightBulbs } from './light_bulbs';
 import { SkyScene } from './sky_scene';
 
-const camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, 1, 20000);
+const camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, 0.00001, 20000);
 camera.position.set( 10, 2, 10 );
 
 const renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -45,9 +45,16 @@ window.addEventListener('click', (event) => {
 
 
 const tree = new Tree(renderer, camera, gBufferRenderTarget);
-const deferShadingPlane = new DeferShadingPlane(renderer, camera, gBufferRenderTarget.texture[0], gBufferRenderTarget.texture[1], depthTexture);
-const lightBulbs = new LightBulbs(renderer, camera, gBufferRenderTarget.texture[1], gBufferRenderTarget.texture[0]);
 const skyScene = new SkyScene(renderer, camera);
+const deferShadingPlane = new DeferShadingPlane(
+  renderer,
+  camera,
+  skyScene.getMoonDirection(),
+  gBufferRenderTarget.texture[0],
+  gBufferRenderTarget.texture[1],
+  depthTexture
+  );
+const lightBulbs = new LightBulbs(renderer, camera, gBufferRenderTarget.texture[1], gBufferRenderTarget.texture[0]);
 const snow = new Snow(renderer, camera);
 
 function render() {

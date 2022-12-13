@@ -6,6 +6,7 @@ const gBufferVertexShader = require('./shaders/g_buffer_v.glsl');
 const gBufferFragmentShader = require('./shaders/g_buffer_f.glsl');
 
 export class Tree {
+  private treeConeRadiusToHeightRatio = 0.5;
   private secondLevelRounds = 15;
   private secondLevelAvgBranchPerRound = 11;
   private secondLevelBranchNum = this.secondLevelRounds * this.secondLevelAvgBranchPerRound;
@@ -106,7 +107,7 @@ export class Tree {
 
   
   private createMeshLevel1(roundNum: number, roundBranchNum: number, branchIdInRound: number) {
-    const scaleFactor = this.jitter((0.5 - 0.5 * roundNum / this.secondLevelRounds));
+    const scaleFactor = this.jitter((this.treeConeRadiusToHeightRatio - this.treeConeRadiusToHeightRatio * roundNum / this.secondLevelRounds));
     const availableLength = this.trunkHeight - this.trunkBotNotGrowingHeight - this.trunkTopNotGrowingHeight;
     const branchHeight = this.jitter(
       roundNum * availableLength / this.secondLevelRounds + this.trunkBotNotGrowingHeight,

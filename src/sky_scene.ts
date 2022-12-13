@@ -29,6 +29,10 @@ export class SkyScene {
     this.scene.add(this.sky);
   }
 
+  getMoonDirection() {
+    return this.moon.clone().normalize();
+  }
+
   updateMoon() {
 
     const phi = THREE.MathUtils.degToRad( 90 - parameters.elevation );

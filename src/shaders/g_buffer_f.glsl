@@ -8,8 +8,9 @@ layout(location = 0) out vec4 fragmentPosition;
 layout(location = 1) out vec4 fragmentColor;
 
 void main() {
-  fragmentColor.xyz = vColor;
   fragmentPosition.xyz = vWorldPosition;
+  fragmentColor.xyz = vColor;
+
   fragmentPosition.w = atan(vWorldNormal.y, vWorldNormal.x);
   fragmentColor.w = acos(vWorldNormal.z);
 }
