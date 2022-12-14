@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Sky } from "./sky";
+import SpriteText from 'three-spritetext';
 
 const parameters = {
   elevation: 7,
@@ -27,6 +28,15 @@ export class SkyScene {
     this.pmremGenerator = new THREE.PMREMGenerator( renderer );
     this.updateMoon();
     this.scene.add(this.sky);
+
+    const greetings = new SpriteText('Happy holidays\nfrom the 3D team!', 1, '#FFFFFF');
+    greetings.material.alphaTest = 0.01; // To prevent sprite border to create artifacts with smow flakes
+    greetings.fontFace = 'Georgia';
+    greetings.strokeWidth = 1.1;
+    greetings.strokeColor = '#FF0000';
+    greetings.position.y = 8;
+
+    this.scene.add(greetings);
   }
 
   getMoonDirection() {

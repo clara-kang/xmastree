@@ -7,13 +7,13 @@ import { LightBulbs } from './light_bulbs';
 import { SkyScene } from './sky_scene';
 
 const camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, 0.00001, 20000);
-camera.position.set( 10, 2, 10 );
+camera.position.set( 10, 2, 0 );
 
 const renderer = new THREE.WebGLRenderer( { antialias: true } );
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 const controls = new OrbitControls( camera, renderer.domElement );
-
+controls.target.set(0, 4, 0);
 
 let read = false;
 let mouseX = 0, mouseY = 0;

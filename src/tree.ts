@@ -57,6 +57,19 @@ export class Tree {
       }
     });
 
+    const topOrnamentSize = 0.25;
+    const topOrnamentGeo = new THREE.OctahedronGeometry(topOrnamentSize);
+    topOrnamentGeo.translate(0, this.trunkHeight + topOrnamentSize, 0);
+    const topOrnament = new THREE.InstancedMesh(topOrnamentGeo, new THREE.RawShaderMaterial( {
+      vertexShader: gBufferVertexShader,
+      fragmentShader: gBufferFragmentShader,
+      glslVersion: THREE.GLSL3,
+      uniforms: {
+        color: {value: new THREE.Vector3(255,0,0)}
+      }
+    }), 1);
+    this.scene.add(topOrnament);
+
     this.leafGeometry = new THREE.PlaneGeometry( this.leafWidth, 1.0 );
     const leafMatrix = new THREE.Matrix4().makeTranslation(this.leafWidth / 2, 0.5, 0);
     this.leafGeometry.applyMatrix4(leafMatrix);
