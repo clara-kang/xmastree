@@ -54,7 +54,7 @@ const deferShadingPlane = new DeferShadingPlane(
   gBufferRenderTarget.texture[1],
   depthTexture
 );
-const lightBulbs = new LightBulbs(renderer, camera, gBufferRenderTarget.texture[1], gBufferRenderTarget.texture[0]);
+const lightBulbs = new LightBulbs(renderer, camera, gBufferRenderTarget.texture[1], gBufferRenderTarget.texture[0], gui);
 const snow = new Snow(renderer, camera, gui);
 deferShadingPlane.listenToMoonDirection(skyScene);
 
