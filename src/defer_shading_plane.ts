@@ -1,7 +1,9 @@
 import * as THREE from 'three';
+import { SkyScene } from './sky_scene';
 
 export class DeferShadingPlane {
   private scene = new THREE.Scene();
+  private material: THREE.RawShaderMaterial;
 
   constructor(
     private renderer: THREE.WebGLRenderer,
@@ -14,7 +16,7 @@ export class DeferShadingPlane {
     const vertexShader = require('./shaders/final_plane_v.glsl');
     const fragmentShader = require('./shaders/final_plane_f.glsl');
     const finalPlaneGeometry = new THREE.PlaneGeometry(2, 2);
-    const material = new THREE.RawShaderMaterial( {
+    this.material = new THREE.RawShaderMaterial( {
       vertexShader,
       fragmentShader: fragmentShader,
       glslVersion: THREE.GLSL3,
@@ -25,9 +27,19 @@ export class DeferShadingPlane {
         depthTex: {value: depthTexture}
       }
     } );
-    const plane = new THREE.Mesh(finalPlaneGeometry, material);
+    const plane = new THREE.Mesh(finalPlaneGeometry, this.material);
     
     this.scene.add(plane);
+  }
+
+  listenToMoonDirection(skyScene: SkyScene) {
+    skyScene.registerMoonListener((moonDirctn) => {
+      this.material.uniforms.lightDirctn.value = moonDirctn;
+    })
+  }
+
+  setDepthTexture(depthTexture: THREE.DepthTexture) {
+    this.material.uniforms.depthTex.value = depthTexture;
   }
 
   render() {

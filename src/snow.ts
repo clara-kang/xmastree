@@ -21,14 +21,14 @@ export class Snow {
 
     constructor(
         private renderer: THREE.WebGLRenderer,
-        private camera: THREE.Camera
+        private camera: THREE.Camera,
+        gui: GUI
     ) {
         this.generateSnow();
-        this.addGUIFolder();
+        this.addGUIFolder(gui);
     }
 
-    addGUIFolder() {
-        const gui = new GUI();
+    addGUIFolder(gui: GUI) {
         const snowFolder = gui.addFolder('Snow');
         snowFolder.open();
         snowFolder.add(this, 'maxRange').min(5).max(30).step(1).onFinishChange(() => {
