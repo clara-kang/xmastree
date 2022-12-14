@@ -12,7 +12,8 @@ uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
-const vec3 lightColor = vec3(255.0, 215.0, 13.0) / 255.0;
+uniform vec3 lightColor;
+
 const float lightRadius = 0.2;
 
 void main() {
