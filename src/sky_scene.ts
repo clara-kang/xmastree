@@ -14,7 +14,7 @@ import { GUI } from 'dat.gui'
 
 
 export class SkyScene {
-  private elevation = 7;
+  private elevation = 60;
   private azimuth = -150;
   private sky = new Sky();
   private scene = new THREE.Scene();

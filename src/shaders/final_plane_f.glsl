@@ -11,7 +11,7 @@ out vec4 fragmentColor;
 const float ambientIntensity = 0.3;
 const float diffuseLightIntensity = 0.9;
 const float hemisphereLightIntensity = 0.2;
-const float trunkLength = 5.1;
+const float trunkLength = 5.05;
 const float treeConeRadius = 2.5;
 
 void main() {

@@ -7,6 +7,7 @@ const gBufferFragmentShader = require('./shaders/g_buffer_f.glsl');
 
 export class Tree {
   private treeConeRadiusToHeightRatio = 0.5;
+  private trunkFraction = 0.92; // rest is top branch
   private secondLevelRounds = 15;
   private secondLevelAvgBranchPerRound = 11;
   private secondLevelBranchNum = this.secondLevelRounds * this.secondLevelAvgBranchPerRound;
@@ -23,7 +24,7 @@ export class Tree {
 
   private trunkHeight = 5;
   private trunkBotNotGrowingHeight = 0.5;
-  private trunkTopNotGrowingHeight = 0.025 * this.trunkHeight;
+  private trunkTopNotGrowingHeight = 0.04 * this.trunkHeight;
 
   private leafWidth = 0.2;
   private leafNumPerBranch = 6;
@@ -46,7 +47,7 @@ export class Tree {
     private gBufferRenderTarget: THREE.WebGLMultipleRenderTargets
   ) {
     this.scene = new THREE.Scene();
-    this.branchGeometry = new THREE.CylinderGeometry(0.08, 0.08, this.trunkHeight, 10);
+    this.branchGeometry = new THREE.CylinderGeometry(0.04, 0.08, this.trunkHeight, 10);
     this.branchGeometry.translate(0, this.trunkHeight * 0.5, 0);
     this.branchMaterial = new THREE.RawShaderMaterial( {
       vertexShader: gBufferVertexShader,
@@ -58,14 +59,15 @@ export class Tree {
     });
 
     const topOrnamentSize = 0.25;
+    const topOrnamentHightOffset = 0.05;
     const topOrnamentGeo = new THREE.OctahedronGeometry(topOrnamentSize);
-    topOrnamentGeo.translate(0, this.trunkHeight + topOrnamentSize, 0);
+    topOrnamentGeo.translate(0, this.trunkHeight + topOrnamentSize + topOrnamentHightOffset, 0);
     const topOrnament = new THREE.InstancedMesh(topOrnamentGeo, new THREE.RawShaderMaterial( {
       vertexShader: gBufferVertexShader,
       fragmentShader: gBufferFragmentShader,
       glslVersion: THREE.GLSL3,
       uniforms: {
-        color: {value: new THREE.Vector3(255,0,0)}
+        color: {value: new THREE.Vector3(1.0,0,0)}
       }
     }), 1);
     this.scene.add(topOrnament);
@@ -83,16 +85,18 @@ export class Tree {
     const secndLevelNoChildBranchNum = (
       (this.secondLevelRoundsWithoutChildren - 1) / 2 + this.getSecndLevelRoundBranchNum(this.secondLevelRounds - 1)
     ) * this.secondLevelRoundsWithoutChildren;
-    const totalBranchNum = 1 + this.secondLevelBranchNum + this.thirdLevelBranchNum * (this.secondLevelBranchNum - secndLevelNoChildBranchNum);
+    const totalBranchNum = 2 + this.secondLevelBranchNum + this.thirdLevelBranchNum * (this.secondLevelBranchNum - secndLevelNoChildBranchNum);
     this.branchInstancedMesh = new THREE.InstancedMesh(this.branchGeometry, this.branchMaterial, totalBranchNum);
 
-    const totalLeafNum = (totalBranchNum - 1) * this.leafNumPerBranch;
+    // trunk doesn't have leaves, top branch has twice more than others
+    const totalLeafNum = (totalBranchNum - 2) * this.leafNumPerBranch + this.leafNumPerBranch * 2;
     this.leafInstancedMesh = new THREE.InstancedMesh(this.leafGeometry, this.leafMaterial, totalLeafNum);
 
     this.scene.add(this.leafInstancedMesh);
     this.scene.add(this.branchInstancedMesh);
 
     this.createMeshLevel0();
+    this.addTopBranch();
   }
 
   render() {
@@ -106,7 +110,7 @@ export class Tree {
   }
 
   private createMeshLevel0() {
-    const branchMatrix = new THREE.Matrix4();
+    const branchMatrix = new THREE.Matrix4().makeScale(1.0, this.trunkFraction, 1.0);
     this.branchInstancedMesh.setMatrixAt(this.currentBranchIndex++, branchMatrix);
     let branchId = 0;
     for (let roundNum = 0; roundNum < this.secondLevelRounds; roundNum++) {
@@ -115,6 +119,20 @@ export class Tree {
         this.createMeshLevel1(roundNum, roundBranchNum, i);
         branchId += 1;
       }
+    }
+  }
+
+  private addTopBranch() {
+    const branchMatrix = new THREE.Matrix4().makeTranslation(0, this.trunkHeight * this.trunkFraction, 0);
+    const branchLength = 1 - this.trunkFraction - 0.02;
+    branchMatrix.multiply(new THREE.Matrix4().scale(new THREE.Vector3(this.thirdLevelRadiusScale, branchLength, this.thirdLevelRadiusScale)));
+    this.branchInstancedMesh.setMatrixAt(this.currentBranchIndex++, branchMatrix);
+
+    const leafMatrix = new THREE.Matrix4().makeTranslation(0, this.trunkHeight * this.trunkFraction, 0);
+    leafMatrix.multiply(new THREE.Matrix4().scale(new THREE.Vector3(0.6, branchLength * this.trunkHeight + this.leafWidth / 2.0, 0.6)));
+    for (let leafId = 0; leafId < this.leafNumPerBranch * 2; ++leafId) {
+      this.leafInstancedMesh.setMatrixAt(this.currentLeafIndex++, leafMatrix);
+      leafMatrix.multiply(new THREE.Matrix4().makeRotationY(this.jitter(Math.PI / this.leafNumPerBranch)));
     }
   }
 
