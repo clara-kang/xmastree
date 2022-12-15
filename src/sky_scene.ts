@@ -66,6 +66,8 @@ export class SkyScene {
         this.updateMoon();
       }
     );
+
+    gui.close();
   }
 
   getMoonDirection() {
