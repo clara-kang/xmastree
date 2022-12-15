@@ -58,6 +58,8 @@ const lightBulbs = new LightBulbs(renderer, camera, gBufferRenderTarget.texture[
 const snow = new Snow(renderer, camera, gui);
 deferShadingPlane.listenToMoonDirection(skyScene);
 
+gui.close();
+
 function render() {
   renderer.autoClear = true;
   renderer.setRenderTarget(gBufferRenderTarget);
