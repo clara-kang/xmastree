@@ -6,8 +6,9 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { DeferShadingPlane } from './defer_shading_plane';
 import { LightBulbs } from './light_bulbs';
 import { SkyScene } from './sky_scene';
+import { Balls } from './balls';
 
-const camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, 1, 1000);
+const camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, 0.1, 100);
 camera.position.set( -10, 5, 0 );
 
 const renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -17,6 +18,8 @@ const controls = new OrbitControls( camera, renderer.domElement );
 controls.target.set(0, 4.5, 0);
 
 let read = false;
+let mouseLeftClicked = false;
+let mouseRightClicked = false;
 let mouseX = 0, mouseY = 0;
 let clickedPosWorld = new THREE.Vector3();
 
@@ -44,7 +47,7 @@ window.addEventListener('click', (event) => {
 });
 
 const gui = new GUI();
-const tree = new Tree(renderer, camera, gBufferRenderTarget);
+const tree = new Tree(renderer, camera);
 const skyScene = new SkyScene(renderer, camera, gui);
 const deferShadingPlane = new DeferShadingPlane(
   renderer,
@@ -55,15 +58,26 @@ const deferShadingPlane = new DeferShadingPlane(
   depthTexture
 );
 const lightBulbs = new LightBulbs(renderer, camera, gBufferRenderTarget.texture[1], gBufferRenderTarget.texture[0], gui);
+const balls = new Balls(renderer, camera, gui);
 const snow = new Snow(renderer, camera, gui);
 deferShadingPlane.listenToMoonDirection(skyScene);
 
-gui.close();
+const settings = {
+  decorationMode: 'light'
+};
+
+gui.add(settings, 'decorationMode', ['light', 'ball']);
+// gui.close();
+
+renderer.autoClear = false;
+
 
 function render() {
-  renderer.autoClear = true;
   renderer.setRenderTarget(gBufferRenderTarget);
+  renderer.clear();
   tree.render();
+  balls.render();
+  
 
   if (read) {
     const pixels = new Float32Array(4);
@@ -72,12 +86,15 @@ function render() {
     clickedPosWorld.set(pixels[0], pixels[1], pixels[2]);
 
     if (clickedPosWorld.length() > 0) {
-      lightBulbs.addLightBulb(clickedPosWorld);
+      if (settings.decorationMode == 'light') {
+        lightBulbs.addLightBulb(clickedPosWorld);
+      } else {
+        balls.addBall(clickedPosWorld.add(new THREE.Vector3(0, -0.1, 0)));
+      }
     }
     read = false;
   }
 
-  renderer.autoClear = false;
   renderer.setRenderTarget(null);
   deferShadingPlane.render();
   lightBulbs.render();

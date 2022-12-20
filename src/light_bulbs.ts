@@ -3,7 +3,8 @@ import { GUI } from 'dat.gui'
 
 const lightBulbVertexShader = require('./shaders/light_bulb_v.glsl');
 const lightBulbFragmentShader = require('./shaders/light_bulb_f.glsl');
-
+const gBufferVertexShader = require('./shaders/g_buffer_v.glsl');
+const gBufferFragmentShader = require('./shaders/g_buffer_f.glsl');
 export class LightBulbs {
   private scene = new THREE.Scene();
   private lightGeometry = new THREE.SphereGeometry(0.2, 8, 8);

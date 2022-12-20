@@ -4,6 +4,7 @@ const treeVertexShader = require('./shaders/tree_v.glsl');
 const treeFragmentShader = require('./shaders/tree_f.glsl');
 const gBufferVertexShader = require('./shaders/g_buffer_v.glsl');
 const gBufferFragmentShader = require('./shaders/g_buffer_f.glsl');
+const normalImg = require('./images/bark_normal.jpg');
 
 export class Tree {
   private treeConeRadiusToHeightRatio = 0.5;
@@ -43,18 +44,20 @@ export class Tree {
 
   constructor (
     private renderer: THREE.WebGLRenderer,
-    private camera: THREE.Camera,
-    private gBufferRenderTarget: THREE.WebGLMultipleRenderTargets
+    private camera: THREE.Camera
   ) {
     this.scene = new THREE.Scene();
-    this.branchGeometry = new THREE.CylinderGeometry(0.04, 0.08, this.trunkHeight, 10);
+    this.branchGeometry = new THREE.CylinderGeometry(0.02, 0.08, this.trunkHeight, 10);
     this.branchGeometry.translate(0, this.trunkHeight * 0.5, 0);
+    const normalTexture = new THREE.TextureLoader().load(normalImg);
     this.branchMaterial = new THREE.RawShaderMaterial( {
       vertexShader: gBufferVertexShader,
       fragmentShader: gBufferFragmentShader,
       glslVersion: THREE.GLSL3,
       uniforms: {
-        color: {value: new THREE.Vector3(139,69,19).multiplyScalar(0.5/255)}
+        color: {value: new THREE.Vector3(139,69,19).multiplyScalar(0.5/255)},
+        normalTex: {value: normalTexture},
+        normaTexProvided: {value: true}
       }
     });
 
@@ -100,7 +103,7 @@ export class Tree {
   }
 
   render() {
-    this.renderer.setRenderTarget(this.gBufferRenderTarget);
+    // this.renderer.setRenderTarget(this.gBufferRenderTarget);
     this.renderer.render(this.scene, this.camera);
   }
 
